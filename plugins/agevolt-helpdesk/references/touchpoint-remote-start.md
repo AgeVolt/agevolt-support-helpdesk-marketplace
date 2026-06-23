@@ -87,9 +87,10 @@ login/refresh. Nepokracuj obchadzanim server-side MCP.
 4. Ak execute vrati `sent`, reportuj, ze remote start bol zaradeny. Pre
    `account_vehicle` a `free_fallback` ide cez
    `agevolt_fe_sp.remote_start_transaction_v2`; pre `ocpp_free_charging` a
-   `touchpoint_local_free_charging` ide cez
-   `agevolt.tx_evse_pending_start_enqueue`. Nehovor, ze fyzicke nabijanie uz
-   zacalo; dodanie zavisi od OCPP/OICP fronty a stavu stanice.
+   `touchpoint_local_free_charging` ide priamo cez
+   `agevolt_ocpp.evse_station_ocpp_outbox` s action `REMOTE_START` a raw
+   `idTag` v payload. Nehovor, ze fyzicke nabijanie uz zacalo; dodanie zavisi
+   od OCPP/OICP fronty a stavu stanice.
 5. Po execute spracuj `notificationDraft`: zapis ClickUp komentar do
    suvisiaceho helpdesk tasku a posli alebo priprav mail zakaznikovi podla
    hlavneho skill postupu `Helpdesk Zaznam A Mail`.
