@@ -3,7 +3,8 @@
 Pouzi tento runbook, ked operator chce cez helpdesk vzdialene spustit
 nabijanie na AgeVolt touchpointe pre konkretny ucet a vozidlo. Ak operator
 nevie dodat ucet ani vozidlo, mozes pouzit free workflow, ale iba ak server
-potvrdi bud OCPP free charging na EVSE, alebo fallback tag s neplatenou policy.
+potvrdi bud OCPP free charging na EVSE, explicitne operatorom potvrdeny lokalny
+touchpoint FreeCharging rezim, alebo fallback tag s neplatenou policy.
 
 ## Povinne Vstupy
 
@@ -13,6 +14,8 @@ potvrdi bud OCPP free charging na EVSE, alebo fallback tag s neplatenou policy.
 - email cieloveho AgeVolt uctu a vozidlo: nazov, SPZ, VIN alebo vehicle ID,
 - alebo explicitne potvrdene, ze operator nevie dodat ani ucet ani vozidlo a
   chce poziadat o free fallback.
+- pri lokalnom free nabijani explicitne potvrdene, ze operator chce
+  service-menu/touchpoint FreeCharging rezim na konkretnom konektore.
 
 Ak je nabijacka jednoportova, konektor nie je povinny. Ak operator povie
 `lavy`, je to konektor `1`; ak povie `pravy`, je to konektor `2`.
@@ -21,8 +24,12 @@ Free fallback nepouzivaj, ak chyba iba jeden z dvojice `accountEmail`/`vehicle`.
 Vtedy si vypytaj chybajuci udaj. Free start je povoleny len cez backendovy
 preview. Server najprv pouzije `agevolt.evse.free_charging_enabled` alebo OCPP
 `FreeCharging` readback pre OCPP free charging; ak nie je zapnuty, skusi
-fallback tag cez `agevolt.tag_evse_context` a odmietne platenu alebo neoverenu
-policy.
+lokalny touchpoint FreeCharging iba ked je vstup
+`allowLocalTouchpointFreeCharging: true`; inak alebo potom skusi fallback tag
+cez `agevolt.tag_evse_context` a odmietne platenu alebo neoverenu policy.
+Lokalny touchpoint FreeCharging pouziva idTag `NOA` (alebo backend env
+override) rovnako ako pos-rn servisny free flow a backend nevie tento lokalny
+persisted flag spolahlivo overit cez DB readback.
 
 ## Resolver Nabijacky
 
@@ -58,25 +65,31 @@ login/refresh. Nepokracuj obchadzanim server-side MCP.
    - `accountEmail`: email cieloveho uctu, ak ho mas,
    - `vehicle`: vozidlo, ak ho mas,
    - `allowFreeFallback`: `true` iba ked operator nevie dodat ani ucet ani
-     vozidlo; server potom najprv skusi OCPP free charging a az potom fallback
-     tag,
+     vozidlo; server potom najprv skusi OCPP free charging, volitelne
+     explicitny lokalny touchpoint free rezim a az potom fallback tag,
+   - `allowLocalTouchpointFreeCharging`: `true` iba ked operator explicitne
+     ziada `ako free charging`, potvrdi servisne menu Connector/OCPP
+     `FreeCharging`, alebo inak potvrdi lokalny touchpoint free rezim,
    - `customerEmail`: email pre follow-up mail, ak je iny ako AgeVolt ucet
      alebo ide o free fallback,
    - `helpdeskTaskId` alebo `helpdeskSearch`: ak mas konkretny ClickUp ticket
      alebo text na dohladanie helpdesk mailu,
    - `maxDistanceMeters`: nechaj default `150`, ak operator neurci inak.
 2. Ak preview vrati `preview_ready`, ukaz operatorovi vyriesene hodnoty:
-   rezim (`account_vehicle`, `ocpp_free_charging` alebo `free_fallback`), ucet
-   ak existuje, vozidlo/tag ak existuju, `ocppFreeCharging.idTag` pri OCPP
-   free rezime, stanica/touchpoint, konektor, vzdialenost, policy pri free
-   rezime a `confirmationId`. Potom sa opytaj na explicitne potvrdenie.
+   rezim (`account_vehicle`, `ocpp_free_charging`,
+   `touchpoint_local_free_charging` alebo `free_fallback`), ucet ak existuje,
+   vozidlo/tag ak existuju, `ocppFreeCharging.idTag` pri OCPP alebo
+   touchpoint-local free rezime, stanica/touchpoint, konektor, vzdialenost,
+   policy pri free rezime a `confirmationId`. Potom sa opytaj na explicitne
+   potvrdenie.
 3. Execute volaj iba po potvrdeni v aktualnom chate:
    `helpdesk_touchpoint_remote_start_execute` s `confirmationId`.
 4. Ak execute vrati `sent`, reportuj, ze remote start bol zaradeny. Pre
    `account_vehicle` a `free_fallback` ide cez
-   `agevolt_fe_sp.remote_start_transaction_v2`; pre `ocpp_free_charging` ide
-   cez `agevolt.tx_evse_pending_start_enqueue`. Nehovor, ze fyzicke nabijanie
-   uz zacalo; dodanie zavisi od OCPP/OICP fronty a stavu stanice.
+   `agevolt_fe_sp.remote_start_transaction_v2`; pre `ocpp_free_charging` a
+   `touchpoint_local_free_charging` ide cez
+   `agevolt.tx_evse_pending_start_enqueue`. Nehovor, ze fyzicke nabijanie uz
+   zacalo; dodanie zavisi od OCPP/OICP fronty a stavu stanice.
 5. Po execute spracuj `notificationDraft`: zapis ClickUp komentar do
    suvisiaceho helpdesk tasku a posli alebo priprav mail zakaznikovi podla
    hlavneho skill postupu `Helpdesk Zaznam A Mail`.
@@ -99,6 +112,10 @@ login/refresh. Nepokracuj obchadzanim server-side MCP.
   stanica nie je online alebo chyba OCPP routing data.
 - `ocpp_free_charging_id_tag_invalid`: nakonfigurovany OCPP free idTag je
   prazdny alebo dlhsi ako OCPP limit 20 znakov.
+- `touchpoint_local_free_charging_station_unavailable`: bol poziadany lokalny
+  touchpoint FreeCharging, ale stanica nie je online alebo chyba OCPP routing.
+- `touchpoint_local_free_charging_id_tag_invalid`: lokalny free idTag je
+  prazdny alebo dlhsi ako OCPP limit 20 znakov.
 - `free_fallback_tag_not_accepted`: fallback tag nema pristup k EVSE alebo nie
   je akceptovany.
 - `paid_charging_requires_account`: policy vyzera ako platena; free fallback
@@ -118,4 +135,6 @@ execute bez potvrdenia. Pouzi iba minimum osobnych udajov potrebnych na
 vyriesenie poziadavky a nevypisuj tajne hodnoty, tokeny ani DB credentials.
 Free start je vynimka pre support a nesmie obist platene nabijanie. Pokracuj
 iba ak preview vrati `mode: "ocpp_free_charging"` s EVSE/OCPP free flagom
-alebo `mode: "free_fallback"` s `policy.paid: false`.
+alebo `mode: "touchpoint_local_free_charging"` po explicitnom operatorovom
+potvrdeni lokalneho FreeCharging rezimu, alebo `mode: "free_fallback"` s
+`policy.paid: false`.
