@@ -1,6 +1,6 @@
 ---
 name: agevolt-helpdesk
-description: "Pouzi pri praci s AgeVolt helpdeskom: triage poziadaviek, priprava odpovedi zakaznikom, incident summary, eskalacie, servisne postupy, OCPP log export zo staging InfluxDB, interny support handover, analyza ticketov, operacny reboot AgeVolt touchpointu cez WiseCloud alebo remote start nabijania na touchpointe. Skill je vhodny aj ked pouzivatel spomenie podporu, ticket, zakaznika, problem s nabijanim, fakturaciou, aplikaciou, portalom, touchpoint, WiseCloud, MDM, deviceId, OCPP logy, rebootni WPYP alebo spusti nabijanie na touchpointe."
+description: "Pouzi pri praci s AgeVolt helpdeskom: triage poziadaviek, priprava odpovedi zakaznikom, incident summary, eskalacie, servisne postupy, OCPP log export zo staging InfluxDB, interny support handover, analyza ticketov, operacny reboot AgeVolt touchpointu cez WiseCloud alebo remote start/stop nabijania na touchpointe. Skill je vhodny aj ked pouzivatel spomenie podporu, ticket, zakaznika, problem s nabijanim, fakturaciou, aplikaciou, portalom, touchpoint, WiseCloud, MDM, deviceId, OCPP logy, rebootni WPYP, spusti nabijanie alebo zastav nabijanie na touchpointe."
 ---
 
 # AgeVolt Helpdesk
@@ -13,7 +13,7 @@ eskalaciach, tvorbe servisnych postupov a operacnych touchpoint ulohach.
 
 1. Najprv urci typ poziadavky: zakaznicka otazka, incident, bug report,
    fakturacia, nabijacia session, portal/aplikacia, hardver, roaming,
-   touchpoint reboot, touchpoint remote start alebo interna operacia.
+   touchpoint reboot, touchpoint remote start/stop alebo interna operacia.
 2. Oddel fakty od predpokladov. Nevyplnaj chybajuce cisla, mena, ID nabijaciek,
    fakturacne udaje ani casy udalosti, ak ich pouzivatel nedodal.
 3. Ak chyba kriticky kontext, vypytaj si iba najmensi potrebny doplnok:
@@ -43,6 +43,26 @@ stanicu, konektor a vzdialenost, potom poziadaj o explicitne potvrdenie v
 aktualnom chate. Ostry remote start posli iba cez execute s `confirmationId`.
 Nehlas, ze fyzicke nabijanie uz zacalo; hlas iba, ze remote start bol zaradeny
 do OCPP/OICP workflowu.
+
+## Touchpoint Remote Stop
+
+Pri poziadavkach ako `zastav nabijanie na touchpointe`, `remote stop na
+nabijacke`, `zastav lavy konektor pre ucet ... a vozidlo ...` alebo podobnych
+operacnych poziadavkach si precitaj
+`references/touchpoint-remote-stop.md` a postupuj presne podla neho.
+
+Pouzivaj iba server-side MCP tooly `helpdesk_touchpoint_remote_stop_preview`
+a `helpdesk_touchpoint_remote_stop_execute`. Preview spusti az ked mas aspon:
+nabijacku alebo adresu/lokalitu, konektor ak ma nabijacka viac portov, email
+cieloveho uctu a vozidlo. Ak pouzivatel zada iba mesto/ulicu, najprv zisti
+suradnice dostupnym geocoderom alebo si vypytaj GPS/presnejsiu stanicu.
+
+Nikdy nevolaj priamy SQL insert, `curl`, HTTP endpoint ani rucny bearer token.
+Najprv zavolaj preview, ukaz vyrieseny ucet, vozidlo, tag, touchpoint,
+stanicu, konektor a aktivnu transakciu, potom poziadaj o explicitne
+potvrdenie v aktualnom chate. Ostry remote stop posli iba cez execute s
+`confirmationId`. Nehlas, ze fyzicke nabijanie sa uz ukoncilo; hlas iba, ze
+remote stop workflow bol prijaty alebo aky stav vratil server.
 
 ## WiseCloud Touchpoint Reboot
 
