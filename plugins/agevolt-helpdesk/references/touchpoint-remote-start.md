@@ -76,7 +76,10 @@ login/refresh. Nepokracuj obchadzanim server-side MCP.
    - `customerEmail`: email pre follow-up mail, ak je iny ako AgeVolt ucet
      alebo ide o free fallback,
    - `helpdeskTaskId` alebo `helpdeskSearch`: ak mas konkretny ClickUp ticket
-     alebo text na dohladanie helpdesk mailu,
+     alebo text na dohladanie helpdesk mailu. Ak je v poziadavke alebo
+     viditelnom kontexte ClickUp task URL, napr.
+     `https://app.clickup.com/t/9012627644/869dup3wf`, extrahuj `869dup3wf`
+     a posli ho ako `helpdeskTaskId`,
    - `maxDistanceMeters`: nechaj default `150`, ak operator neurci inak.
 2. Ak preview vrati `preview_ready`, ukaz operatorovi vyriesene hodnoty:
    rezim (`account_vehicle`, `ocpp_free_charging`,
@@ -94,9 +97,12 @@ login/refresh. Nepokracuj obchadzanim server-side MCP.
    `agevolt_ocpp.evse_station_ocpp_outbox` s action `REMOTE_START` a raw
    `idTag` v payload. Nehovor, ze fyzicke nabijanie uz zacalo; dodanie zavisi
    od OCPP/OICP fronty a stavu stanice.
-5. Po execute spracuj `notificationDraft`: zapis ClickUp komentar do
-   suvisiaceho helpdesk tasku a posli alebo priprav mail zakaznikovi podla
-   hlavneho skill postupu `Helpdesk Zaznam A Mail`.
+5. Po execute spracuj `followUp` alebo `notificationDraft`: zapis ClickUp
+   komentar do suvisiaceho helpdesk tasku a posli alebo priprav mail
+   zakaznikovi podla hlavneho skill postupu `Helpdesk Zaznam A Mail`. Toto je
+   povinna sucast workflowu; neukonci odpoved operatorovi iba stavom remote
+   startu. Ak `followUp.clickup.status` je `created`, backend uz ClickUp
+   komentar vytvoril a nesmies pridat duplikat.
 
 ## Typicke Stavy
 
