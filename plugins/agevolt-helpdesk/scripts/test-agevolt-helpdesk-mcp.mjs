@@ -6,13 +6,23 @@ let id = 0;
 async function request(method, params = {}) {
   const response = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json, text/event-stream"
+    },
     body: JSON.stringify({ jsonrpc: "2.0", id: ++id, method, params })
   });
   if (!response.ok) throw new Error(`${method} HTTP ${response.status}`);
-  const message = await response.json();
+  const text = await response.text();
+  const message = parseMcpResponse(text);
   if (message.error) throw new Error(`${method}: ${message.error.message || JSON.stringify(message.error)}`);
   return message;
+}
+
+function parseMcpResponse(text) {
+  const dataLine = text.split(/\r?\n/).find((line) => line.startsWith("data: "));
+  if (dataLine) return JSON.parse(dataLine.slice(6));
+  return JSON.parse(text);
 }
 
 try {
@@ -23,6 +33,8 @@ try {
     "helpdesk.meta.get_status",
     "helpdesk_touchpoint_remote_start_preview",
     "helpdesk_touchpoint_remote_start_execute",
+    "helpdesk_touchpoint_remote_stop_preview",
+    "helpdesk_touchpoint_remote_stop_execute",
     "wisecloud.touchpoint.resolve_serial",
     "wisecloud.touchpoint.reboot"
   ]) {
