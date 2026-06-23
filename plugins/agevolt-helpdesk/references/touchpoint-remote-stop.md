@@ -53,6 +53,9 @@ login/refresh. Nepokracuj obchadzanim server-side MCP.
    - `connector`: `left`, `right`, `1` alebo `2`, ak treba,
    - `accountEmail`: email cieloveho uctu,
    - `vehicle`: vozidlo,
+   - `customerEmail`: email pre follow-up mail, ak je iny ako AgeVolt ucet,
+   - `helpdeskTaskId` alebo `helpdeskSearch`: ak mas konkretny ClickUp ticket
+     alebo text na dohladanie helpdesk mailu,
    - `maxDistanceMeters`: nechaj default `150`, ak operator neurci inak.
 2. Ak preview vrati `preview_ready`, ukaz operatorovi vyriesene hodnoty:
    ucet, vozidlo, tag, stanica/touchpoint, konektor, aktivnu transakciu,
@@ -62,6 +65,9 @@ login/refresh. Nepokracuj obchadzanim server-side MCP.
 4. Ak execute vrati `stopped`, reportuj, ze remote stop workflow bol prijaty
    cez `agevolt_fe_sp.remote_stop_transaction`. Nehovor, ze fyzicke nabijanie
    je urcite ukoncene bez kontroly finalneho stavu stanice alebo session.
+5. Po execute spracuj `notificationDraft`: zapis ClickUp komentar do
+   suvisiaceho helpdesk tasku a posli alebo priprav mail zakaznikovi podla
+   hlavneho skill postupu `Helpdesk Zaznam A Mail`.
 
 ## Typicke Stavy
 
