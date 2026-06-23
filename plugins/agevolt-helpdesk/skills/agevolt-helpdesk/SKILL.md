@@ -88,11 +88,22 @@ spracuj `notificationDraft` podla sekcie `Helpdesk Zaznam A Mail`.
 ## Helpdesk Zaznam A Mail
 
 Po uspesnom alebo stavovom execute remote start/stop skontroluj, ci odpoved
-obsahuje `notificationDraft`. Ak ano, pouzi ho ako zdroj pravdy pre nasledny
-ClickUp zaznam a mail zakaznikovi.
+obsahuje `followUp` alebo `notificationDraft`. Ak ano, tento follow-up je
+povinna sucast workflowu, nie volitelny navrh. Neskonci odpoved operatorovi
+iba stavom `sent`, `accepted` alebo `stopped`; najprv sa pokus zapisat ClickUp
+komentar a poslat/pripravit mail zakaznikovi, alebo jasne napis, ktory
+connector/tool nie je dostupny.
 
-1. ClickUp: ak `notificationDraft.clickup.taskId` je vyplnene, pridaj
-   `notificationDraft.clickup.commentText` ako task comment. Ak task ID chyba,
+Ak je v poziadavke alebo viditelnom kontexte ClickUp task URL, napr.
+`https://app.clickup.com/t/9012627644/869dup3wf`, extrahuj task ID
+`869dup3wf` a posli ho uz do preview ako `helpdeskTaskId`. Ako
+`helpdeskSearch` posli aj predmet ticketu alebo text poziadavky, ak ho mas.
+
+1. ClickUp: pouzi `followUp.clickup`, ak existuje; inak pouzi
+   `notificationDraft.clickup`. Ak `followUp.clickup.status` je `created`,
+   ClickUp komentar uz vytvoril backend; nepridavaj duplikat. Ak `taskId` je
+   vyplnene a status nie je `created`, pridaj `commentText` ako task comment.
+   Ak task ID chyba alebo `followUp.clickup.status` je `search_required`,
    hladaj cez ClickUp search podla `searchHints`, emailu, SPZ, nazvu stanice,
    station device ID alebo touchpoint device ID. Preferuj tasky v
    `AV_Operation / Customer Care / Helpdesk` a task type `HELP_MAIL`; v CRM
@@ -100,10 +111,12 @@ ClickUp zaznam a mail zakaznikovi.
    potvrdenie, do ktoreho zapisat.
 2. Mail: preferuj odpoved na existujuci helpdesk mail thread. Najdi ho cez
    Outlook search podla rovnakeho emailu/search hintov. Ak najdes jednoznacny
-   thread, pouzi text z `notificationDraft.email.textContent` ako odpoved. Ak
-   thread nenajdes a `notificationDraft.email.to` je vyplnene, posli novy mail
-   na tento email so subjectom z `notificationDraft.email.subject`. Ak email
-   chyba alebo je viac moznych prijemcov, vypytaj si ho.
+   thread, pouzi text z `followUp.email.textContent` alebo
+   `notificationDraft.email.textContent` ako odpoved. Ak thread nenajdes a
+   `followUp.email.to` alebo `notificationDraft.email.to` je vyplnene, posli
+   novy mail na tento email so subjectom z `followUp.email.subject` alebo
+   `notificationDraft.email.subject`. Ak email chyba alebo je viac moznych
+   prijemcov, vypytaj si ho.
 3. Do odpovede operatorovi napis strucne, ci bol ClickUp komentar zapisany a
    ci bol mail odoslany alebo pripraveny ako draft. Nepredstieraj zapis ani
    odoslanie, ak connector/tool nebol dostupny alebo operacia zlyhala.
