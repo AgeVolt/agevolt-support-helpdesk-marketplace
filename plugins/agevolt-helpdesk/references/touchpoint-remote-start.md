@@ -44,6 +44,9 @@ Ak operator zada iba mesto a ulicu, najprv zisti suradnice adresy dostupnym
 geocoderom/browserom a odovzdaj `latitude` + `longitude` do preview toolu. Ak
 geocoder nie je dostupny alebo adresa nie je jednoznacna, vypytaj si GPS,
 presnejsi nazov stanice alebo device ID. Nehadaj touchpoint z pamati.
+Ked posielas `latitude` + `longitude`, mozes ponechat povodny `charger` text
+ako kontext, ale backend bude kandidata vyberat podla najblizsieho
+`agevolt.evse.geo`; text adresy sa nemusi nachadzat v station/touchpoint meta.
 
 ## MCP Workflow
 

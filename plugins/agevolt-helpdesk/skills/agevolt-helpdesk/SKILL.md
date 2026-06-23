@@ -41,7 +41,9 @@ povoli iba fallback tag s overenou neplatenou policy. Ak chyba iba jeden z
 dvojice ucet/vozidlo, nepouzivaj fallback a vypytaj si chybajuci udaj. Ak
 pouzivatel zada iba mesto/ulicu, najprv zisti suradnice dostupnym geocoderom
 alebo si vypytaj GPS/presnejsiu stanicu; tool vie najbezpecnejsie zvolit
-touchpoint podla `agevolt.evse.geo`.
+touchpoint podla `agevolt.evse.geo`. Ak posielas `latitude` + `longitude`,
+nevyzaduj, aby text adresy sedel s DB meta; backend ma vtedy vybrat najblizsi
+touchpoint podla EVSE GPS.
 
 Ak operator vyslovene povie `ako free charging`, `service menu free charging`
 alebo potvrdi, ze na touchpointe je v servisnom menu zapnuty
