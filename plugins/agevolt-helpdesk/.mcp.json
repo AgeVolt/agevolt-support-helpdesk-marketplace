@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "agevolt-helpdesk": {
+      "type": "http",
+      "url": "https://av-agent.agevolt.com/mcp/helpdesk"
+    }
+  }
+}
