@@ -1,0 +1,53 @@
+{
+  "name": "agevolt-helpdesk",
+  "version": "0.5.0",
+  "description": "AgeVolt Helpdesk doplnok pre podporu zakaznikov, internu triage, incidenty, servisne postupy, OCPP log export, WiseCloud touchpoint operacie a remote start nabijania cez AgeVolt MCP.",
+  "author": {
+    "name": "AgeVolt",
+    "email": "zustiak@agevolt.com",
+    "url": "https://www.agevolt.com"
+  },
+  "homepage": "https://www.agevolt.com",
+  "license": "UNLICENSED",
+  "keywords": [
+    "agevolt",
+    "helpdesk",
+    "support",
+    "tickets",
+    "customer-support",
+    "incidents",
+    "service",
+    "codex",
+    "skills",
+    "mcp",
+    "ocpp",
+    "influx",
+    "logs",
+    "wisecloud",
+    "touchpoint",
+    "remote-start",
+    "charging",
+    "reboot",
+    "mdm",
+    "automation"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "AgeVolt Helpdesk",
+    "shortDescription": "Helpdesk workflow doplnok pre AgeVolt.",
+    "longDescription": "AgeVolt Helpdesk doplnok pre Codex. Pomaha pri podpore zakaznikov, triedeni poziadaviek, priprave odpovedi, analyzovani incidentov, tvorbe internych servisnych postupov, exporte OCPP logov zo staging Influxu, WiseCloud touchpoint operaciach a bezpecnom remote starte nabijania na touchpointe cez AgeVolt MCP endpoint.",
+    "developerName": "AgeVolt",
+    "category": "Productivity",
+    "defaultPrompt": "Pomoz s AgeVolt helpdesk poziadavkou. Pri operacnych write akciach pouzi MCP preview/confirm/execute workflow a neobchadzaj ho priamym HTTP, SQL ani token fallbackom.",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://www.agevolt.com",
+    "brandColor": "#280046",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png"
+  }
+}
