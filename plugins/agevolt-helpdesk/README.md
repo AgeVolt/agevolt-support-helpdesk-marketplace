@@ -6,6 +6,6 @@ Obsahuje:
 
 - skill `agevolt-helpdesk`,
 - MCP konfiguraciu pre `https://av-agent.agevolt.com/mcp/helpdesk`,
-- runbooky pre WiseCloud touchpoint operacie, OCPP log export a touchpoint remote start/stop nabijania vratane free fallbacku pre neplatene nabijanie a ClickUp/mail follow-upu.
+- runbooky pre WiseCloud touchpoint operacie, OCPP log export a touchpoint remote start/stop nabijania vratane OCPP free charging/fallback startu pre neplatene nabijanie a ClickUp/mail follow-upu.
 
 Plugin neobsahuje ziadne hesla, tokeny ani zakaznicke exporty. Zive operacie idu cez server-side AgeVolt Helpdesk MCP.

@@ -2,8 +2,8 @@
 
 Pouzi tento runbook, ked operator chce cez helpdesk vzdialene spustit
 nabijanie na AgeVolt touchpointe pre konkretny ucet a vozidlo. Ak operator
-nevie dodat ucet ani vozidlo, mozes pouzit free fallback workflow, ale iba ak
-server potvrdi, ze nejde o platene nabijanie.
+nevie dodat ucet ani vozidlo, mozes pouzit free workflow, ale iba ak server
+potvrdi bud OCPP free charging na EVSE, alebo fallback tag s neplatenou policy.
 
 ## Povinne Vstupy
 
@@ -18,9 +18,11 @@ Ak je nabijacka jednoportova, konektor nie je povinny. Ak operator povie
 `lavy`, je to konektor `1`; ak povie `pravy`, je to konektor `2`.
 
 Free fallback nepouzivaj, ak chyba iba jeden z dvojice `accountEmail`/`vehicle`.
-Vtedy si vypytaj chybajuci udaj. Free fallback je povoleny len cez backendovy
-preview, ktory overuje fallback tag cez `agevolt.tag_evse_context` a odmietne
-platenu alebo neoverenu policy.
+Vtedy si vypytaj chybajuci udaj. Free start je povoleny len cez backendovy
+preview. Server najprv pouzije `agevolt.evse.free_charging_enabled` alebo OCPP
+`FreeCharging` readback pre OCPP free charging; ak nie je zapnuty, skusi
+fallback tag cez `agevolt.tag_evse_context` a odmietne platenu alebo neoverenu
+policy.
 
 ## Resolver Nabijacky
 
@@ -56,20 +58,24 @@ login/refresh. Nepokracuj obchadzanim server-side MCP.
    - `accountEmail`: email cieloveho uctu, ak ho mas,
    - `vehicle`: vozidlo, ak ho mas,
    - `allowFreeFallback`: `true` iba ked operator nevie dodat ani ucet ani
-     vozidlo,
+     vozidlo; server potom najprv skusi OCPP free charging a az potom fallback
+     tag,
    - `customerEmail`: email pre follow-up mail, ak je iny ako AgeVolt ucet
      alebo ide o free fallback,
    - `helpdeskTaskId` alebo `helpdeskSearch`: ak mas konkretny ClickUp ticket
      alebo text na dohladanie helpdesk mailu,
    - `maxDistanceMeters`: nechaj default `150`, ak operator neurci inak.
 2. Ak preview vrati `preview_ready`, ukaz operatorovi vyriesene hodnoty:
-   rezim (`account_vehicle` alebo `free_fallback`), ucet ak existuje, vozidlo,
-   tag, stanica/touchpoint, konektor, vzdialenost, policy pri fallbacku a
-   `confirmationId`. Potom sa opytaj na explicitne potvrdenie.
+   rezim (`account_vehicle`, `ocpp_free_charging` alebo `free_fallback`), ucet
+   ak existuje, vozidlo/tag ak existuju, `ocppFreeCharging.idTag` pri OCPP
+   free rezime, stanica/touchpoint, konektor, vzdialenost, policy pri free
+   rezime a `confirmationId`. Potom sa opytaj na explicitne potvrdenie.
 3. Execute volaj iba po potvrdeni v aktualnom chate:
    `helpdesk_touchpoint_remote_start_execute` s `confirmationId`.
-4. Ak execute vrati `sent`, reportuj, ze remote start bol zaradeny cez
-   `agevolt_fe_sp.remote_start_transaction_v2`. Nehovor, ze fyzicke nabijanie
+4. Ak execute vrati `sent`, reportuj, ze remote start bol zaradeny. Pre
+   `account_vehicle` a `free_fallback` ide cez
+   `agevolt_fe_sp.remote_start_transaction_v2`; pre `ocpp_free_charging` ide
+   cez `agevolt.tx_evse_pending_start_enqueue`. Nehovor, ze fyzicke nabijanie
    uz zacalo; dodanie zavisi od OCPP/OICP fronty a stavu stanice.
 5. Po execute spracuj `notificationDraft`: zapis ClickUp komentar do
    suvisiaceho helpdesk tasku a posli alebo priprav mail zakaznikovi podla
@@ -85,9 +91,14 @@ login/refresh. Nepokracuj obchadzanim server-side MCP.
 - `target_incomplete`: bol zadany iba ucet alebo iba vozidlo; dopln chybajuci
   udaj alebo pouzi fallback iba ked chyba oboje.
 - `free_fallback_tag_not_found`: nie je nakonfigurovany ani jednoznacne
-  najdeny aktivny free fallback tag v priestore stanice.
+  najdeny aktivny free fallback tag v priestore stanice a EVSE nema zapnuty
+  pouzitelny OCPP free charging.
 - `free_fallback_tag_ambiguous`: existuje viac moznych fallback tagov; treba
   nakonfigurovat presne fallback tag ID.
+- `ocpp_free_charging_station_unavailable`: EVSE ma free charging zapnuty, ale
+  stanica nie je online alebo chyba OCPP routing data.
+- `ocpp_free_charging_id_tag_invalid`: nakonfigurovany OCPP free idTag je
+  prazdny alebo dlhsi ako OCPP limit 20 znakov.
 - `free_fallback_tag_not_accepted`: fallback tag nema pristup k EVSE alebo nie
   je akceptovany.
 - `paid_charging_requires_account`: policy vyzera ako platena; free fallback
@@ -105,5 +116,6 @@ login/refresh. Nepokracuj obchadzanim server-side MCP.
 Remote start je write operacia. Vzdy pouzi preview/execute model, nikdy priamy
 execute bez potvrdenia. Pouzi iba minimum osobnych udajov potrebnych na
 vyriesenie poziadavky a nevypisuj tajne hodnoty, tokeny ani DB credentials.
-Free fallback je vynimka pre support a nesmie obist platene nabijanie; ak
-preview nevrati `mode: "free_fallback"` s `policy.paid: false`, nepokracuj.
+Free start je vynimka pre support a nesmie obist platene nabijanie. Pokracuj
+iba ak preview vrati `mode: "ocpp_free_charging"` s EVSE/OCPP free flagom
+alebo `mode: "free_fallback"` s `policy.paid: false`.

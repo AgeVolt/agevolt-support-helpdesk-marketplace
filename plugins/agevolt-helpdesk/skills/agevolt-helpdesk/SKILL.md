@@ -35,16 +35,18 @@ a `helpdesk_touchpoint_remote_start_execute`. Preview spusti az ked mas aspon:
 nabijacku alebo adresu/lokalitu, konektor ak ma nabijacka viac portov a bud
 email cieloveho uctu spolu s vozidlom, alebo explicitnu informaciu, ze operator
 nevie dodat ani ucet ani vozidlo. Vtedy mozes nastavit `allowFreeFallback:
-true`; server to povoli iba ak databaza overi neplatene nabijanie. Ak chyba
+true`; server najprv povoli `ocpp_free_charging`, ak ma EVSE zapnuty OCPP free
+charging, inak povoli iba fallback tag s overenou neplatenou policy. Ak chyba
 iba jeden z dvojice ucet/vozidlo, nepouzivaj fallback a vypytaj si chybajuci
 udaj. Ak pouzivatel zada iba mesto/ulicu, najprv zisti suradnice dostupnym
 geocoderom alebo si vypytaj GPS/presnejsiu stanicu; tool vie najbezpecnejsie
 zvolit touchpoint podla `agevolt.evse.geo`.
 
 Nikdy nevolaj priamy SQL insert, `curl`, HTTP endpoint ani rucny bearer token.
-Najprv zavolaj preview, ukaz vyrieseny ucet, vozidlo, tag, touchpoint,
-stanicu, konektor a vzdialenost, potom poziadaj o explicitne potvrdenie v
-aktualnom chate. Ostry remote start posli iba cez execute s `confirmationId`.
+Najprv zavolaj preview, ukaz rezim, vyrieseny ucet/vozidlo/tag ak existuju,
+`ocppFreeCharging.idTag` pri OCPP free rezime, touchpoint, stanicu, konektor a
+vzdialenost, potom poziadaj o explicitne potvrdenie v aktualnom chate. Ostry
+remote start posli iba cez execute s `confirmationId`.
 Nehlas, ze fyzicke nabijanie uz zacalo; hlas iba, ze remote start bol zaradeny
 do OCPP/OICP workflowu. Po execute spracuj `notificationDraft` podla sekcie
 `Helpdesk Zaznam A Mail`.

@@ -12,11 +12,11 @@ Starter index pre buduce helpdesk pravidla, sablony a odkazy na zdroje.
 - hardver a servis
 - interne eskalacie
 - WiseCloud touchpoint operacie
-- touchpoint remote start/stop nabijania vratane free fallbacku a ClickUp/mail follow-upu
+- touchpoint remote start/stop nabijania vratane OCPP free charging/fallback startu a ClickUp/mail follow-upu
 
 ## Runbooky
 
-- [Touchpoint Remote Start Nabijania](../touchpoint-remote-start.md) - postup pre bezpecne spustenie nabijania na touchpointe cez MCP preview/execute workflow, vratane free fallbacku len pre neplatene nabijanie.
+- [Touchpoint Remote Start Nabijania](../touchpoint-remote-start.md) - postup pre bezpecne spustenie nabijania na touchpointe cez MCP preview/execute workflow, vratane OCPP free charging alebo fallbacku len pre neplatene nabijanie.
 - [Touchpoint Remote Stop Nabijania](../touchpoint-remote-stop.md) - postup pre bezpecne zastavenie aktivneho nabijania na touchpointe cez MCP preview/execute workflow a helpdesk follow-up.
 - [WiseCloud Touchpoint Reboot](../wisecloud-touchpoint-reboot.md) - postup pre prikazy typu `rebootni <serial>` cez server-side MCP tool `wisecloud.touchpoint.reboot`.
 - [OCPP Log Export cez InfluxDB](../ocpp-log-export-influxdb.md) - postup pre XLSX export OCPP logov zo staging InfluxDB podla `deviceId`.
