@@ -32,17 +32,22 @@ operacnych poziadavkach si precitaj
 
 Pouzivaj iba server-side MCP tooly `helpdesk_touchpoint_remote_start_preview`
 a `helpdesk_touchpoint_remote_start_execute`. Preview spusti az ked mas aspon:
-nabijacku alebo adresu/lokalitu, konektor ak ma nabijacka viac portov, email
-cieloveho uctu a vozidlo. Ak pouzivatel zada iba mesto/ulicu, najprv zisti
-suradnice dostupnym geocoderom alebo si vypytaj GPS/presnejsiu stanicu; tool
-vie najbezpecnejsie zvolit touchpoint podla `agevolt.evse.geo`.
+nabijacku alebo adresu/lokalitu, konektor ak ma nabijacka viac portov a bud
+email cieloveho uctu spolu s vozidlom, alebo explicitnu informaciu, ze operator
+nevie dodat ani ucet ani vozidlo. Vtedy mozes nastavit `allowFreeFallback:
+true`; server to povoli iba ak databaza overi neplatene nabijanie. Ak chyba
+iba jeden z dvojice ucet/vozidlo, nepouzivaj fallback a vypytaj si chybajuci
+udaj. Ak pouzivatel zada iba mesto/ulicu, najprv zisti suradnice dostupnym
+geocoderom alebo si vypytaj GPS/presnejsiu stanicu; tool vie najbezpecnejsie
+zvolit touchpoint podla `agevolt.evse.geo`.
 
 Nikdy nevolaj priamy SQL insert, `curl`, HTTP endpoint ani rucny bearer token.
 Najprv zavolaj preview, ukaz vyrieseny ucet, vozidlo, tag, touchpoint,
 stanicu, konektor a vzdialenost, potom poziadaj o explicitne potvrdenie v
 aktualnom chate. Ostry remote start posli iba cez execute s `confirmationId`.
 Nehlas, ze fyzicke nabijanie uz zacalo; hlas iba, ze remote start bol zaradeny
-do OCPP/OICP workflowu.
+do OCPP/OICP workflowu. Po execute spracuj `notificationDraft` podla sekcie
+`Helpdesk Zaznam A Mail`.
 
 ## Touchpoint Remote Stop
 
@@ -62,7 +67,31 @@ Najprv zavolaj preview, ukaz vyrieseny ucet, vozidlo, tag, touchpoint,
 stanicu, konektor a aktivnu transakciu, potom poziadaj o explicitne
 potvrdenie v aktualnom chate. Ostry remote stop posli iba cez execute s
 `confirmationId`. Nehlas, ze fyzicke nabijanie sa uz ukoncilo; hlas iba, ze
-remote stop workflow bol prijaty alebo aky stav vratil server.
+remote stop workflow bol prijaty alebo aky stav vratil server. Po execute
+spracuj `notificationDraft` podla sekcie `Helpdesk Zaznam A Mail`.
+
+## Helpdesk Zaznam A Mail
+
+Po uspesnom alebo stavovom execute remote start/stop skontroluj, ci odpoved
+obsahuje `notificationDraft`. Ak ano, pouzi ho ako zdroj pravdy pre nasledny
+ClickUp zaznam a mail zakaznikovi.
+
+1. ClickUp: ak `notificationDraft.clickup.taskId` je vyplnene, pridaj
+   `notificationDraft.clickup.commentText` ako task comment. Ak task ID chyba,
+   hladaj cez ClickUp search podla `searchHints`, emailu, SPZ, nazvu stanice,
+   station device ID alebo touchpoint device ID. Preferuj tasky v
+   `AV_Operation / Customer Care / Helpdesk` a task type `HELP_MAIL`; v CRM
+   preferuj `CRM_NEW-MAIL`. Ak najdes viac moznych taskov, najprv si vypytaj
+   potvrdenie, do ktoreho zapisat.
+2. Mail: preferuj odpoved na existujuci helpdesk mail thread. Najdi ho cez
+   Outlook search podla rovnakeho emailu/search hintov. Ak najdes jednoznacny
+   thread, pouzi text z `notificationDraft.email.textContent` ako odpoved. Ak
+   thread nenajdes a `notificationDraft.email.to` je vyplnene, posli novy mail
+   na tento email so subjectom z `notificationDraft.email.subject`. Ak email
+   chyba alebo je viac moznych prijemcov, vypytaj si ho.
+3. Do odpovede operatorovi napis strucne, ci bol ClickUp komentar zapisany a
+   ci bol mail odoslany alebo pripraveny ako draft. Nepredstieraj zapis ani
+   odoslanie, ak connector/tool nebol dostupny alebo operacia zlyhala.
 
 ## WiseCloud Touchpoint Reboot
 
