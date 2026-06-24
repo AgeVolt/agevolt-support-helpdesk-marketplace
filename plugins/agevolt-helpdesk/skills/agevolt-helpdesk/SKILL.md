@@ -109,14 +109,20 @@ Ak je v poziadavke alebo viditelnom kontexte ClickUp task URL, napr.
    `AV_Operation / Customer Care / Helpdesk` a task type `HELP_MAIL`; v CRM
    preferuj `CRM_NEW-MAIL`. Ak najdes viac moznych taskov, najprv si vypytaj
    potvrdenie, do ktoreho zapisat.
-2. Mail: preferuj odpoved na existujuci helpdesk mail thread. Najdi ho cez
-   Outlook search podla rovnakeho emailu/search hintov. Ak najdes jednoznacny
-   thread, pouzi text z `followUp.email.textContent` alebo
-   `notificationDraft.email.textContent` ako odpoved. Ak thread nenajdes a
-   `followUp.email.to` alebo `notificationDraft.email.to` je vyplnene, posli
-   novy mail na tento email so subjectom z `followUp.email.subject` alebo
-   `notificationDraft.email.subject`. Ak email chyba alebo je viac moznych
-   prijemcov, vypytaj si ho.
+2. Mail: zakaznicku odpoved pre tento workflow posielaj iba cez ClickUp
+   Helpdesk task activity composer v rezime `Email`, alebo cez specializovany
+   tool, ktory explicitne posiela odpoved z daneho ClickUp helpdesk tasku.
+   Nepouzivaj Outlook, osobnu schranku, ani `send_email_on_behalf`; obislo by
+   to helpdesk ticket a moze to odoslat mail zo zleho odosielatela. Pouzi text
+   z `followUp.email.textContent` alebo `notificationDraft.email.textContent`,
+   subject z `followUp.email.subject` alebo `notificationDraft.email.subject`
+   a prijemcu z `followUp.email.to` alebo `notificationDraft.email.to`.
+   Ak ClickUp Email mode/tool nie je v aktualnom Codex tool surface dostupny,
+   mail neoznacuj ako odoslany: jasne napis, ze ClickUp email odosielaci tool
+   chyba, a vypis pripraveny text pre odoslanie cez Email mode v tasku. Ak mas
+   dostupne bezpecne UI ovladanie priamo nad prihlasenym ClickUpom, posli mail
+   cez UI az po potvrdeni konkretneho tasku, odosielatela, prijemcu, subjectu
+   a celeho tela spravy v aktualnom chate.
 3. Do odpovede operatorovi napis strucne, ci bol ClickUp komentar zapisany a
    ci bol mail odoslany alebo pripraveny ako draft. Nepredstieraj zapis ani
    odoslanie, ak connector/tool nebol dostupny alebo operacia zlyhala.
