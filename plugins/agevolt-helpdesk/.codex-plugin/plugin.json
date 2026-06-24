@@ -1,6 +1,6 @@
 {
   "name": "agevolt-helpdesk",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "AgeVolt Helpdesk doplnok pre podporu zakaznikov, internu triage, incidenty, servisne postupy, OCPP log export, WiseCloud touchpoint operacie, remote start/stop nabijania a helpdesk follow-up cez AgeVolt MCP.",
   "author": {
     "name": "AgeVolt",
@@ -40,7 +40,7 @@
   "interface": {
     "displayName": "AgeVolt Helpdesk",
     "shortDescription": "Helpdesk workflow doplnok pre AgeVolt.",
-    "longDescription": "AgeVolt Helpdesk doplnok pre Codex. Pomaha pri podpore zakaznikov, triedeni poziadaviek, priprave odpovedi, analyzovani incidentov, tvorbe internych servisnych postupov, exporte OCPP logov zo staging Influxu, WiseCloud touchpoint operaciach, bezpecnom remote starte/stope nabijania na touchpointe, free fallback starte pre neplatene nabijanie a ClickUp/mail follow-upe cez AgeVolt MCP endpoint.",
+    "longDescription": "AgeVolt Helpdesk doplnok pre Codex. Pomaha pri podpore zakaznikov, triedeni poziadaviek, priprave odpovedi, analyzovani incidentov, tvorbe internych servisnych postupov, exporte OCPP logov zo staging Influxu, WiseCloud touchpoint operaciach, bezpecnom remote starte/stope nabijania na touchpointe, free fallback starte pre neplatene nabijanie a ClickUp komentar a ClickUp task Email mode follow-up cez AgeVolt MCP endpoint.",
     "developerName": "AgeVolt",
     "category": "Productivity",
     "defaultPrompt": "Pomoz s AgeVolt helpdesk poziadavkou. Pri operacnych write akciach pouzi MCP preview/confirm/execute workflow a neobchadzaj ho priamym HTTP, SQL ani token fallbackom.",

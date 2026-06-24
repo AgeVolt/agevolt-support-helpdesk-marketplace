@@ -98,11 +98,12 @@ login/refresh. Nepokracuj obchadzanim server-side MCP.
    `idTag` v payload. Nehovor, ze fyzicke nabijanie uz zacalo; dodanie zavisi
    od OCPP/OICP fronty a stavu stanice.
 5. Po execute spracuj `followUp` alebo `notificationDraft`: zapis ClickUp
-   komentar do suvisiaceho helpdesk tasku a posli alebo priprav mail
-   zakaznikovi podla hlavneho skill postupu `Helpdesk Zaznam A Mail`. Toto je
-   povinna sucast workflowu; neukonci odpoved operatorovi iba stavom remote
-   startu. Ak `followUp.clickup.status` je `created`, backend uz ClickUp
-   komentar vytvoril a nesmies pridat duplikat.
+   komentar do suvisiaceho helpdesk tasku a zakaznicku odpoved posli iba cez
+   ClickUp task Email mode alebo specializovany ClickUp email tool podla
+   hlavneho skill postupu `Helpdesk Zaznam A Mail`. Nepouzivaj Outlook ani
+   osobnu schranku. Toto je povinna sucast workflowu; neukonci odpoved
+   operatorovi iba stavom remote startu. Ak `followUp.clickup.status` je
+   `created`, backend uz ClickUp komentar vytvoril a nesmies pridat duplikat.
 
 ## Typicke Stavy
 

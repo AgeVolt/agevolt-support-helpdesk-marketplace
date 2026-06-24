@@ -12,7 +12,7 @@ Starter index pre buduce helpdesk pravidla, sablony a odkazy na zdroje.
 - hardver a servis
 - interne eskalacie
 - WiseCloud touchpoint operacie
-- touchpoint remote start/stop nabijania vratane OCPP free charging, touchpoint-local free charging/fallback startu a ClickUp/mail follow-upu
+- touchpoint remote start/stop nabijania vratane OCPP free charging, touchpoint-local free charging/fallback startu, ClickUp komentara a ClickUp task Email mode follow-upu
 
 ## Runbooky
 
